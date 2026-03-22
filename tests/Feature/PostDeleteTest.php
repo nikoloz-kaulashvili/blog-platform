@@ -14,18 +14,10 @@ class PostDeleteTest extends TestCase
 
     public function test_user_can_delete_own_post()
     {
-        $user = User::create([
-            'name' => 'User',
-            'email' => 'user@test.com',
-            'password' => bcrypt('password'),
-            'role' => 'user',
-        ]);
+        $user = User::factory()->create();
+        $category = Category::factory()->create();
 
-        $category = Category::create(['name' => 'Test']);
-
-        $post = Post::create([
-            'title' => 'Test',
-            'description' => 'Test',
+        $post = Post::factory()->create([
             'user_id' => $user->id,
             'category_id' => $category->id,
             'status' => 'approved',
@@ -42,19 +34,10 @@ class PostDeleteTest extends TestCase
 
     public function test_admin_can_delete_any_post()
     {
-        $admin = User::create([
-            'name' => 'Admin',
-            'email' => 'admin@test.com',
-            'password' => bcrypt('password'),
-            'role' => 'admin',
-        ]);
+        $admin = User::factory()->admin()->create();
+        $category = Category::factory()->create();
 
-        $category = Category::create(['name' => 'Test']);
-
-        $post = Post::create([
-            'title' => 'Test',
-            'description' => 'Test',
-            'user_id' => $admin->id,
+        $post = Post::factory()->create([
             'category_id' => $category->id,
             'status' => 'approved',
         ]);
@@ -70,25 +53,15 @@ class PostDeleteTest extends TestCase
 
     public function test_guest_cannot_delete_post()
     {
-        $user = User::create([
-            'name' => 'User',
-            'email' => 'user3@test.com',
-            'password' => bcrypt('password'),
-            'role' => 'user',
-        ]);
+        $category = Category::factory()->create();
 
-        $category = Category::create(['name' => 'Test']);
-
-        $post = Post::create([
-            'title' => 'Test',
-            'description' => 'Test',
-            'user_id' => $user->id,
+        $post = Post::factory()->create([
             'category_id' => $category->id,
             'status' => 'approved',
         ]);
 
         $response = $this->delete("/posts/{$post->id}");
 
-        $response->assertRedirect('/login');
+        $response->assertRedirect(route('login'));
     }
 }

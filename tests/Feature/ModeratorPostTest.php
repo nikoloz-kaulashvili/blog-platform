@@ -14,18 +14,10 @@ class ModeratorPostTest extends TestCase
 
     public function test_moderator_can_approve_post()
     {
-        $moderator = User::create([
-            'name' => 'Moderator',
-            'email' => 'mod@test.com',
-            'password' => bcrypt('password'),
-            'role' => 'moderator',
-        ]);
+        $moderator = User::factory()->moderator()->create();
+        $category = Category::factory()->create();
 
-        $category = Category::create(['name' => 'Test']);
-
-        $post = Post::create([
-            'title' => 'Test',
-            'description' => 'Test',
+        $post = Post::factory()->create([
             'user_id' => $moderator->id,
             'category_id' => $category->id,
             'status' => 'pending',
@@ -44,18 +36,10 @@ class ModeratorPostTest extends TestCase
 
     public function test_moderator_can_reject_post()
     {
-        $moderator = User::create([
-            'name' => 'Moderator',
-            'email' => 'mod2@test.com',
-            'password' => bcrypt('password'),
-            'role' => 'moderator',
-        ]);
+        $moderator = User::factory()->moderator()->create();
+        $category = Category::factory()->create();
 
-        $category = Category::create(['name' => 'Test']);
-
-        $post = Post::create([
-            'title' => 'Test',
-            'description' => 'Test',
+        $post = Post::factory()->create([
             'user_id' => $moderator->id,
             'category_id' => $category->id,
             'status' => 'pending',
@@ -74,18 +58,10 @@ class ModeratorPostTest extends TestCase
 
     public function test_user_cannot_approve_post()
     {
-        $user = User::create([
-            'name' => 'User',
-            'email' => 'user@test.com',
-            'password' => bcrypt('password'),
-            'role' => 'user',
-        ]);
+        $user = User::factory()->create();
+        $category = Category::factory()->create();
 
-        $category = Category::create(['name' => 'Test']);
-
-        $post = Post::create([
-            'title' => 'Test',
-            'description' => 'Test',
+        $post = Post::factory()->create([
             'user_id' => $user->id,
             'category_id' => $category->id,
             'status' => 'pending',
@@ -94,30 +70,20 @@ class ModeratorPostTest extends TestCase
         $response = $this->actingAs($user)
             ->post("/posts/{$post->id}/approve");
 
-        $response->assertStatus(403);
+        $response->assertForbidden();
     }
 
     public function test_guest_cannot_approve_post()
     {
-        $user = User::create([
-            'name' => 'User',
-            'email' => 'user2@test.com',
-            'password' => bcrypt('password'),
-            'role' => 'user',
-        ]);
+        $category = Category::factory()->create();
 
-        $category = Category::create(['name' => 'Test']);
-
-        $post = Post::create([
-            'title' => 'Test',
-            'description' => 'Test',
-            'user_id' => $user->id,
+        $post = Post::factory()->create([
             'category_id' => $category->id,
             'status' => 'pending',
         ]);
 
         $response = $this->post("/posts/{$post->id}/approve");
 
-        $response->assertRedirect('/login');
+        $response->assertRedirect(route('login'));
     }
 }

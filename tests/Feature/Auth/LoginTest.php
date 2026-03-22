@@ -4,6 +4,7 @@ namespace Tests\Feature\Auth;
 
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Hash;
 use Tests\TestCase;
 
 class LoginTest extends TestCase
@@ -13,7 +14,7 @@ class LoginTest extends TestCase
     public function test_user_can_login()
     {
         $user = User::factory()->create([
-            'password' => bcrypt('password'),
+            'password' => Hash::make('password'),
         ]);
 
         $response = $this->post('/login', [
@@ -22,14 +23,13 @@ class LoginTest extends TestCase
         ]);
 
         $response->assertRedirect('/');
-
         $this->assertAuthenticatedAs($user);
     }
 
     public function test_user_cannot_login_with_wrong_password()
     {
         $user = User::factory()->create([
-            'password' => bcrypt('password'),
+            'password' => Hash::make('password'),
         ]);
 
         $response = $this->post('/login', [
@@ -43,9 +43,9 @@ class LoginTest extends TestCase
 
     public function test_user_cannot_login_with_wrong_email()
     {
-        User::factory()->create([
+        $user = User::factory()->create([
             'email' => 'nika@test.com',
-            'password' => bcrypt('password'),
+            'password' => Hash::make('password'),
         ]);
 
         $response = $this->post('/login', [

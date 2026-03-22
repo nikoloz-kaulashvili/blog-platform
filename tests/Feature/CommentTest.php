@@ -16,24 +16,25 @@ class CommentTest extends TestCase
     public function test_user_can_create_comment()
     {
         $user = User::factory()->create();
+        $category = Category::factory()->create();
 
-        $post = Post::create([
-            'title' => 'Test Post',
-            'description' => 'Test',
+        $post = Post::factory()->create([
             'user_id' => $user->id,
-            'category_id' => Category::create(['name' => 'Test'])->id,
+            'category_id' => $category->id,
             'status' => 'approved',
         ]);
 
-        $response = $this->actingAs($user)->post("/posts/{$post->id}/comments", [
+        $data = [
             'content' => 'Test comment',
             'post_id' => $post->id,
-        ]);
+        ];
+
+        $response = $this->actingAs($user)->post("/posts/{$post->id}/comments", $data);
 
         $response->assertRedirect();
 
         $this->assertDatabaseHas('comments', [
-            'content' => 'Test comment',
+            'content' => $data['content'],
             'user_id' => $user->id,
             'post_id' => $post->id,
         ]);
@@ -41,20 +42,10 @@ class CommentTest extends TestCase
 
     public function test_guest_cannot_create_comment()
     {
-        $user = User::create([
-            'name' => 'Test',
-            'email' => 'test@test.com',
-            'password' => bcrypt('password'),
-            'role' => 'user',
-        ]);
+        $user = User::factory()->create();
+        $category = Category::factory()->create();
 
-        $category = Category::create([
-            'name' => 'Test',
-        ]);
-
-        $post = Post::create([
-            'title' => 'Test Post',
-            'description' => 'Test',
+        $post = Post::factory()->create([
             'user_id' => $user->id,
             'category_id' => $category->id,
             'status' => 'approved',
@@ -64,23 +55,21 @@ class CommentTest extends TestCase
             'content' => 'Test comment',
         ]);
 
-        $response->assertStatus(403);;
+        $response->assertForbidden();
     }
 
     public function test_user_can_reply_to_comment()
     {
         $user = User::factory()->create();
+        $category = Category::factory()->create();
 
-        $post = Post::create([
-            'title' => 'Test Post',
-            'description' => 'Test',
+        $post = Post::factory()->create([
             'user_id' => $user->id,
-            'category_id' => Category::create(['name' => 'Test'])->id,
+            'category_id' => $category->id,
             'status' => 'approved',
         ]);
 
-        $parent = Comment::create([
-            'content' => 'Parent',
+        $parent = Comment::factory()->create([
             'user_id' => $user->id,
             'post_id' => $post->id,
         ]);
@@ -92,6 +81,7 @@ class CommentTest extends TestCase
         ]);
 
         $this->assertDatabaseHas('comments', [
+            'content' => 'Reply comment',
             'parent_id' => $parent->id,
         ]);
     }
@@ -99,12 +89,11 @@ class CommentTest extends TestCase
     public function test_comment_requires_content()
     {
         $user = User::factory()->create();
+        $category = Category::factory()->create();
 
-        $post = Post::create([
-            'title' => 'Test Post',
-            'description' => 'Test',
+        $post = Post::factory()->create([
             'user_id' => $user->id,
-            'category_id' => Category::create(['name' => 'Test'])->id,
+            'category_id' => $category->id,
             'status' => 'approved',
         ]);
 

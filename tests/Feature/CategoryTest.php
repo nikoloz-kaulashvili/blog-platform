@@ -3,7 +3,6 @@
 namespace Tests\Feature;
 
 use App\Models\User;
-use App\Models\Category;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -13,21 +12,18 @@ class CategoryTest extends TestCase
 
     public function test_admin_can_create_category()
     {
-        $admin = User::create([
-            'name' => 'Nika',
-            'email' => 'nika@test.com',
-            'password' => bcrypt('password'),
-            'role' => 'admin',
-        ]);
+        $admin = User::factory()->admin()->create();
 
-        $response = $this->actingAs($admin)->post('/categories', [
+        $data = [
             'name' => 'Tech',
-        ]);
+        ];
+
+        $response = $this->actingAs($admin)->post('/categories', $data);
 
         $response->assertRedirect();
 
         $this->assertDatabaseHas('categories', [
-            'name' => 'Tech',
+            'name' => $data['name'],
         ]);
     }
 
@@ -35,19 +31,23 @@ class CategoryTest extends TestCase
     {
         $user = User::factory()->create();
 
-        $response = $this->actingAs($user)->post('/categories', [
+        $data = [
             'name' => 'Tech',
-        ]);
+        ];
 
-        $response->assertStatus(403);
+        $response = $this->actingAs($user)->post('/categories', $data);
+
+        $response->assertForbidden();
     }
 
     public function test_guest_cannot_create_category()
     {
-        $response = $this->post('/categories', [
+        $data = [
             'name' => 'Tech',
-        ]);
+        ];
 
-        $response->assertRedirect('/login');
+        $response = $this->post('/categories', $data);
+
+        $response->assertRedirect(route('login'));
     }
 }

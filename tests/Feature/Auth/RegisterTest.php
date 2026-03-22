@@ -12,17 +12,19 @@ class RegisterTest extends TestCase
 
     public function test_user_can_register()
     {
-        $response = $this->post('/register', [
+        $data = [
             'name' => 'Nika',
             'email' => 'nika@test.com',
             'password' => 'password',
             'password_confirmation' => 'password',
-        ]);
+        ];
+
+        $response = $this->post('/register', $data);
 
         $response->assertRedirect('/');
 
         $this->assertDatabaseHas('users', [
-            'email' => 'nika@test.com',
+            'email' => $data['email'],
         ]);
 
         $this->assertAuthenticated();
@@ -30,27 +32,31 @@ class RegisterTest extends TestCase
 
     public function test_register_validation_fails()
     {
-        $response = $this->post('/register', [
+        $data = [
             'name' => '',
             'email' => 'wrong-email',
             'password' => '123',
-        ]);
+        ];
+
+        $response = $this->post('/register', $data);
 
         $response->assertSessionHasErrors(['name', 'email', 'password']);
     }
 
     public function test_user_cannot_register_with_existing_email()
     {
-        User::factory()->create([
+        $existingUser = User::factory()->create([
             'email' => 'nika@test.com',
         ]);
 
-        $response = $this->post('/register', [
+        $data = [
             'name' => 'Nika',
-            'email' => 'nika@test.com',
+            'email' => $existingUser->email,
             'password' => 'password',
             'password_confirmation' => 'password',
-        ]);
+        ];
+
+        $response = $this->post('/register', $data);
 
         $response->assertSessionHasErrors('email');
     }
