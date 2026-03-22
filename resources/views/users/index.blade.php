@@ -2,12 +2,9 @@
 
 @section('content')
     <div class="max-w-5xl mx-auto">
-
         <h2 class="text-2xl font-bold mb-6">Users</h2>
-
         @foreach ($users as $user)
             <div class="bg-white p-4 mb-3 rounded-xl shadow flex justify-between items-center">
-
                 <div>
                     <p class="font-semibold">{{ $user->name }}</p>
                     <p class="text-sm text-gray-500">{{ $user->email }}</p>
@@ -26,9 +23,7 @@
                         Save
                     </button>
                 </form>
-
             </div>
         @endforeach
-
     </div>
 @endsection

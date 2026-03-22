@@ -30,25 +30,6 @@ class PostService
         return $post;
     }
 
-    public function update(Post $post, array $data): Post
-    {
-        if (isset($data['image'])) {
-            if ($post->image) {
-                Storage::disk('public')->delete($post->image);
-            }
-
-            $data['image'] = $data['image']->store('posts', 'public');
-        }
-
-        $post->update([
-            'title'       => $data['title'],
-            'description' => $data['description'],
-            'category_id' => $data['category_id'],
-        ]);
-
-        return $post;
-    }
-
     public function delete(Post $post): void
     {
         if ($post->image) {

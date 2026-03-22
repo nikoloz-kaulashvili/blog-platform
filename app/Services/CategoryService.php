@@ -35,9 +35,4 @@ class CategoryService
     {
         return Category::find($id);
     }
-
-    public function findOrFail(int $id): Category
-    {
-        return Category::findOrFail($id);
-    }
 }
