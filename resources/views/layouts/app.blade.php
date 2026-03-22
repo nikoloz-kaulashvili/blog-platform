@@ -120,13 +120,31 @@
 
         if (btn) {
             btn.addEventListener('click', () => {
+
+                // dropdown toggle
                 dropdown.classList.toggle('hidden');
 
+                // mark as read
                 fetch('/notifications/read', {
                     method: 'POST',
                     headers: {
                         'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
                     }
+                }).then(() => {
+
+                    // 🔥 counter reset
+                    const counter = document.getElementById('notificationCount');
+                    if (counter) {
+                        counter.remove(); // ან შეგიძლია hidden გააკეთო
+                    }
+
+                    // 🔥 ყველა ნოთიფიკაციას მოვხსნათ ლურჯი ფონი
+                    document.querySelectorAll('#notificationDropdown .bg-blue-50')
+                        .forEach(el => el.classList.remove('bg-blue-50'));
+
+                    // 🔥 წერტილებიც გავაგრეიოთ
+                    document.querySelectorAll('#notificationDropdown .bg-blue-500')
+                        .forEach(el => el.classList.replace('bg-blue-500', 'bg-gray-300'));
                 });
             });
 
@@ -219,12 +237,22 @@
 
             showToast(message, type);
 
-            // 🔔 COUNTER
             const counter = document.getElementById('notificationCount');
+            const btn = document.getElementById('notificationBtn');
+
             if (counter) {
                 let current = parseInt(counter.innerText) || 0;
                 counter.innerText = current + 1;
-                counter.classList.remove('hidden');
+            } else {
+                const span = document.createElement('span');
+                span.id = 'notificationCount';
+                span.className = `
+                    absolute -top-1 -right-1 bg-red-600 text-white text-[10px]
+                    min-w-[18px] h-[18px] flex items-center justify-center rounded-full px-1
+                `;
+                span.innerText = 1;
+
+                btn.appendChild(span);
             }
 
             // 🔥 DROPDOWN UPDATE

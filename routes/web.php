@@ -20,7 +20,10 @@ Route::middleware('auth')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
     Route::resource('posts', PostController::class);
 });
-
+Route::post('/notifications/read', function () {
+    auth()->user()->notifications()->update(['is_read' => 1]);
+    return response()->json(['success' => true]);
+})->middleware('auth');
 Route::middleware(['auth', 'role:admin,moderator'])->group(function () {
     Route::post('/posts/{post}/approve', [PostController::class, 'approve'])->name('posts.approve');
     Route::post('/posts/{post}/reject', [PostController::class, 'reject'])->name('posts.reject');
