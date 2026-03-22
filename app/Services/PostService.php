@@ -52,13 +52,18 @@ class PostService
             $data['image'] = $data['image']->store('posts', 'public');
         }
 
-        $post->update([
+        $updateData = [
             'status'      => 'edited',
             'title'       => $data['title'],
             'description' => $data['description'],
             'category_id' => $data['category_id'],
-            'image' => $data['image'],
-        ]);
+        ];
+
+        if (isset($data['image'])) {
+            $updateData['image'] = $data['image'];
+        }
+
+        $post->update($updateData);
 
         return $post;
     }

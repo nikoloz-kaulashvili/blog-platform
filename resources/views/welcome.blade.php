@@ -3,19 +3,6 @@
 @section('content')
     <div class="max-w-6xl mx-auto">
 
-        {{-- HERO --}}
-        <div class="flex items-center justify-center min-h-[50vh]">
-
-            <div class="text-center max-w-xl">
-
-                <h1 class="text-4xl font-bold text-gray-800 mb-4">
-                    აქტიური პოსტები
-                </h1>
-
-            </div>
-
-        </div>
-
         <form method="GET" action="{{ route('main.index') }}" class="bg-white p-4 rounded-2xl shadow mb-6">
             <div class="flex flex-wrap items-center gap-3">
                 <input type="text" name="title" value="{{ request('title') }}" placeholder="Search by title..."

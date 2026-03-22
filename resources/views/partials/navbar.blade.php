@@ -5,9 +5,11 @@
             @if (auth()->user()->role === 'admin')
                 <a href="{{ route('categories.index') }}">კატეგორიები</a>
                 <a href="{{ route('users.index') }}">მომხმარებლები</a>
+                <a href="{{ route('posts.index') }}">დასადასტურებელი პოსტები</a>
             @endif
 
             @if (auth()->user()->role === 'moderator')
+                <a href="{{ route('categories.index') }}">კატეგორიები</a>
                 <a href="{{ route('posts.index') }}">დასადასტურებელი პოსტები</a>
             @endif
             @if (auth()->user()->role === 'user')

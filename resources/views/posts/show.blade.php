@@ -25,13 +25,6 @@
                 {{ $post->description }}
             </p>
 
-            <div class="flex gap-2 mt-6">
-                <a href="{{ route('posts.index') }}"
-                    class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm shadow">
-                    ← მთავარ გვერდზე დაბრუნება
-                </a>
-            </div>
-
         </div>
 
 
@@ -45,7 +38,7 @@
                     @csrf
 
                     <textarea name="content" class="w-full border p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        placeholder="Write a comment..."></textarea>
+                        placeholder="Write a comment..." required></textarea>
 
                     <button class="mt-3 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg">
                         კომენტარის დამატება
@@ -81,7 +74,7 @@
 
                             <input name="content"
                                 class="flex-1 border p-2 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                placeholder="Reply...">
+                                placeholder="Reply..." required>
 
                             <button class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-lg text-sm transition">
                                 პასუხი
