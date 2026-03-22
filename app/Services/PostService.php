@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Events\PostCreated;
 use App\Jobs\AutoApprovePostJob;
 use App\Models\Post;
 use Illuminate\Support\Facades\Auth;
@@ -10,6 +11,8 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\PostStatusChangedMail;
 use App\Events\PostStatusUpdated;
+use App\Mail\PostCreatedMail;
+use App\Models\User;
 
 class PostService
 {
@@ -27,6 +30,16 @@ class PostService
         dispatch(new AutoApprovePostJob($post->id))
             ->delay(now()->addHours(2));
 
+        $moderators = User::where('role', 'moderator')->get();
+
+        $moderatorIds = $moderators->pluck('id')->toArray();
+
+        event(new PostCreated($post, $moderatorIds));
+
+        foreach ($moderators as $moderator) {
+            Mail::to($moderator->email)->send(new PostCreatedMail($post));
+        }
+
         return $post;
     }
 
@@ -36,7 +49,6 @@ class PostService
             if ($post->image) {
                 Storage::disk('public')->delete($post->image);
             }
-
             $data['image'] = $data['image']->store('posts', 'public');
         }
 
@@ -45,6 +57,7 @@ class PostService
             'title'       => $data['title'],
             'description' => $data['description'],
             'category_id' => $data['category_id'],
+            'image' => $data['image'],
         ]);
 
         return $post;
