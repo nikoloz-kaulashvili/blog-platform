@@ -45,6 +45,20 @@ class PostController extends Controller
         return redirect()->route('posts.index');
     }
 
+    public function edit(Post $post)
+    {
+        $categories = Category::query()->get();
+
+        return view('posts.edit', compact('post', 'categories'));
+    }
+
+    public function update(UpdatePostRequest $request, Post $post)
+    {
+        $this->postService->update($post, $request->validated());
+
+        return redirect()->route('posts.index');
+    }
+
     public function destroy(Post $post)
     {
         $this->postService->delete($post);

@@ -51,23 +51,21 @@
                             {{ $post->category->name }}
                         </p>
                     </div>
-                    @if (in_array(auth()->user()->role, ['admin', 'moderator']) && $post->status === 'pending')
-                        <div>
-                            @if ($post->status === 'approved')
-                                <span class="bg-blue-100 text-green-700 text-xs px-3 py-1 rounded-full">
-                                    Approved
-                                </span>
-                            @elseif ($post->status === 'pending')
-                                <span class="bg-blue-100 text-yellow-700 text-xs px-3 py-1 rounded-full">
-                                    Pending
-                                </span>
-                            @else
-                                <span class="bg-red-100 text-red-700 text-xs px-3 py-1 rounded-full">
-                                    Rejected
-                                </span>
-                            @endif
-                        </div>
-                    @endif
+                    <div>
+                        @if ($post->status === 'approved')
+                            <span class="bg-blue-100 text-green-700 text-xs px-3 py-1 rounded-full">
+                                Approved
+                            </span>
+                        @elseif ($post->status === 'pending')
+                            <span class="bg-blue-100 text-yellow-700 text-xs px-3 py-1 rounded-full">
+                                Pending
+                            </span>
+                        @else
+                            <span class="bg-red-100 text-red-700 text-xs px-3 py-1 rounded-full">
+                                Rejected
+                            </span>
+                        @endif
+                    </div>
                 </div>
 
                 <div class="flex flex-wrap gap-2 mt-4">
@@ -75,6 +73,13 @@
                         class="bg-green-600 hover:bg-gray-800 text-white px-3 py-1 rounded-lg text-sm">
                         View
                     </a>
+
+                    @if (auth()->id() === $post->user_id && $post->status === 'pending')
+                        <a href="{{ route('posts.edit', $post) }}"
+                            class="bg-green-600 hover:bg-green-600 text-white px-3 py-1 rounded-lg text-sm">
+                            Edit
+                        </a>
+                    @endif
 
                     @if (auth()->id() === $post->user_id || auth()->user()->role === 'admin')
                         <form method="POST" action="{{ route('posts.destroy', $post) }}">
