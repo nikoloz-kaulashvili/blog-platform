@@ -1,15 +1,17 @@
 <nav class="bg-white shadow p-4 flex justify-between">
     <div class="flex gap-4">
-        <a href="{{ route('posts.index') }}">Posts</a>
-
+        <a href="{{ route('main.index') }}">პოსტები</a>
         @auth
             @if (auth()->user()->role === 'admin')
-                <a href="{{ route('categories.index') }}">Categories</a>
-                <a href="{{ route('users.index') }}">Users</a>
+                <a href="{{ route('categories.index') }}">კატეგორიები</a>
+                <a href="{{ route('users.index') }}">მომხმარებლები</a>
             @endif
 
             @if (auth()->user()->role === 'moderator')
-                <a href="{{ route('categories.index') }}">Categories</a>
+                <a href="{{ route('posts.index') }}">დასადასტურებელი პოსტები</a>
+            @endif
+            @if (auth()->user()->role === 'user')
+                <a href="{{ route('posts.index') }}">ჩემი პოსტები</a>
             @endif
         @endauth
 
@@ -38,7 +40,7 @@
                     class="hidden absolute right-0 mt-3 w-96 bg-white rounded-2xl shadow-xl border border-gray-100 z-50 overflow-hidden">
 
                     <div class="flex justify-between items-center p-4 border-b bg-gray-50">
-                        <span class="font-semibold text-gray-800">Notifications</span>
+                        <span class="font-semibold text-gray-800">ნოთიფიქეიშენები</span>
                     </div>
 
                     <div class="max-h-96 overflow-y-auto">
@@ -66,7 +68,7 @@
                             </div>
                         @empty
                             <div class="p-6 text-center text-gray-400 text-sm">
-                                No notifications
+                                არარის ნოთიფიქეიშენი
                             </div>
                         @endforelse
 
@@ -81,11 +83,11 @@
 
             <form method="POST" action="{{ route('logout') }}">
                 @csrf
-                <button class="text-red-600 text-sm">Logout</button>
+                <button class="text-red-600 text-sm">გასვლა</button>
             </form>
         @else
-            <a href="{{ route('login') }}" class="text-sm">Login</a>
-            <a href="{{ route('register') }}" class="text-sm">Register</a>
+            <a href="{{ route('login') }}" class="text-sm">შესვლა</a>
+            <a href="{{ route('register') }}" class="text-sm">რეგისტრაცია</a>
         @endauth
     </div>
 </nav>

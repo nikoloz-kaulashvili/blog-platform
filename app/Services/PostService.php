@@ -41,6 +41,7 @@ class PostService
         }
 
         $post->update([
+            'status'      => 'edited',
             'title'       => $data['title'],
             'description' => $data['description'],
             'category_id' => $data['category_id'],
@@ -74,9 +75,10 @@ class PostService
             ])
         );
 
-        Mail::to($post->user->email)
-            ->send(new PostStatusChangedMail($post));
+        Mail::to($post->user->email)->send(new PostStatusChangedMail($post));
+
         event(new PostStatusUpdated($post, $post->user_id));
+
         return $post;
     }
 
@@ -94,58 +96,32 @@ class PostService
             ])
         );
 
-        Mail::to($post->user->email)
-            ->send(new PostStatusChangedMail($post));
+        Mail::to($post->user->email)->send(new PostStatusChangedMail($post));
+
         event(new PostStatusUpdated($post, $post->user_id));
-        return $post;
-    }
-
-    public function setStatus(Post $post, string $status): Post
-    {
-        $data = ['status' => $status];
-
-        if ($status === 'approved') {
-            $data['approved_at'] = now();
-        }
-
-        if ($status !== 'approved') {
-            $data['approved_at'] = null;
-        }
-
-        $post->update($data);
 
         return $post;
     }
 
-    public function getApproved()
+
+    public function getFiltered($request, $user = null)
     {
-        return Post::with(['user', 'category'])
-            ->where('status', 'approved')
+        return Post::query()
+            ->with(['category', 'user', 'comments.replies'])
+            ->withCount('comments')
+            ->when(!$user, function ($q) {
+                $q->where('status', 'approved');
+            })
+            ->when($user && !in_array($user->role, ['admin', 'moderator']), function ($q) use ($user) {
+                $q->where('user_id', $user->id);
+            })
+            ->when($request->filled('title'), function ($q) use ($request) {
+                $q->where('title', 'like', '%' . $request->title . '%');
+            })
+            ->when($request->filled('category_id'), function ($q) use ($request) {
+                $q->where('category_id', $request->category_id);
+            })
             ->latest()
             ->get();
-    }
-
-    public function getAll()
-    {
-        return Post::latest()->get();
-    }
-
-    public function getFiltered($request, $user)
-    {
-        $query = Post::with('category')->latest();
-
-        if ($user->role === 'user') {
-            $query->where('status', 'approved');
-        }
-
-        if ($request->filled('title')) {
-            $query->where('title', 'like', '%' . $request->title . '%');
-        }
-
-        if ($request->filled('category_id')) {
-            $query->where('category_id', $request->category_id);
-        }
-
-        return $query->get();
     }
 }

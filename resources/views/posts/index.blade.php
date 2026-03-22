@@ -4,11 +4,11 @@
     <div class="max-w-5xl mx-auto">
 
         <div class="flex justify-between items-center mb-6">
-            <h2 class="text-2xl font-bold">Posts</h2>
+            <h2 class="text-2xl font-bold">პოსტები</h2>
 
             <a href="{{ route('posts.create') }}"
                 class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg shadow">
-                + Create Post
+                + პოსტის შექმნა
             </a>
         </div>
 
@@ -19,7 +19,7 @@
 
                 <select name="category_id"
                     class="border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 p-2 rounded-lg w-52">
-                    <option value="">All Categories</option>
+                    <option value="">კატეგორიები</option>
                     @foreach ($categories as $category)
                         <option value="{{ $category->id }}" {{ request('category_id') == $category->id ? 'selected' : '' }}>
                             {{ $category->name }}
@@ -28,12 +28,12 @@
                 </select>
 
                 <button class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg shadow-sm transition">
-                    Filter
+                    ფილტრები
                 </button>
 
                 <button class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg shadow-sm transition">
                     <a href="{{ route('posts.index') }}">
-                        Reset
+                        გასუფთავება
                     </a>
                 </button>
             </div>
@@ -54,15 +54,19 @@
                     <div>
                         @if ($post->status === 'approved')
                             <span class="bg-blue-100 text-green-700 text-xs px-3 py-1 rounded-full">
-                                Approved
+                                დადასტურებული
                             </span>
                         @elseif ($post->status === 'pending')
                             <span class="bg-blue-100 text-yellow-700 text-xs px-3 py-1 rounded-full">
-                                Pending
+                                მოლოდინის რეჟიმში
+                            </span>
+                        @elseif ($post->status === 'edited')
+                            <span class="bg-blue-100 text-yellow-700 text-xs px-3 py-1 rounded-full">
+                                შესწორებული
                             </span>
                         @else
                             <span class="bg-red-100 text-red-700 text-xs px-3 py-1 rounded-full">
-                                Rejected
+                                უარყოფილი
                             </span>
                         @endif
                     </div>
@@ -71,13 +75,14 @@
                 <div class="flex flex-wrap gap-2 mt-4">
                     <a href="{{ route('posts.show', $post) }}"
                         class="bg-green-600 hover:bg-gray-800 text-white px-3 py-1 rounded-lg text-sm">
-                        View
+                        ნახვა
                     </a>
 
-                    @if (auth()->id() === $post->user_id && $post->status === 'pending')
+                    @if (auth()->id() === $post->user_id &&
+                            ($post->status === 'pending' || $post->status === 'edited' || $post->status === 'rejected'))
                         <a href="{{ route('posts.edit', $post) }}"
                             class="bg-green-600 hover:bg-green-600 text-white px-3 py-1 rounded-lg text-sm">
-                            Edit
+                            შეცვლა
                         </a>
                     @endif
 
@@ -87,23 +92,25 @@
                             @method('DELETE')
                             <button onclick="return confirm('Are you sure?')"
                                 class="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded-lg text-sm">
-                                Delete
+                                წაშლა
                             </button>
                         </form>
                     @endif
 
-                    @if (in_array(auth()->user()->role, ['admin', 'moderator']) && $post->status === 'pending')
+                    @if (
+                        (auth()->user()->role === 'admin' || auth()->user()->role === 'moderator') &&
+                            ($post->status === 'pending' || $post->status === 'edited'))
                         <form method="POST" action="{{ route('posts.approve', $post) }}">
                             @csrf
                             <button class="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded-lg text-sm">
-                                Approve
+                                დადასტურება
                             </button>
                         </form>
 
                         <form method="POST" action="{{ route('posts.reject', $post) }}">
                             @csrf
                             <button class="bg-green-600 hover:bg-green-600 text-white px-3 py-1 rounded-lg text-sm">
-                                Reject
+                                უარყოფა
                             </button>
                         </form>
                     @endif
