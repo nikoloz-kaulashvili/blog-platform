@@ -42,7 +42,7 @@ class PostController extends Controller
     {
         $this->postService->create($request->validated());
 
-        return redirect()->route('posts.index');
+        return redirect()->route('posts.index')->with('success', 'პოსტი წარმატებით დაემატა');
     }
 
     public function edit(Post $post)
@@ -56,27 +56,27 @@ class PostController extends Controller
     {
         $this->postService->update($post, $request->validated());
 
-        return redirect()->route('posts.index');
+        return redirect()->route('posts.index')->with('success', 'პოსტი წარმატებით განახლდა');
     }
 
     public function destroy(Post $post)
     {
         $this->postService->delete($post);
 
-        return redirect()->route('posts.index');
+        return redirect()->route('posts.index')->with('success', 'პოსტი წარმატებით წაიშალა');
     }
 
     public function approve(Post $post)
     {
         $this->postService->approve($post);
 
-        return redirect()->back();
+        return redirect()->back()->with('success', 'პოსტი დადასტურდა');
     }
 
     public function reject(Post $post)
     {
         $this->postService->reject($post);
 
-        return redirect()->back();
+        return redirect()->back()->with('success', 'პოსტი უარყოფილია');
     }
 }

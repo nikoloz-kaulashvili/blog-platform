@@ -22,6 +22,26 @@
 
     @include('partials.toast')
 
+    @if (session('success') || session('error'))
+        <div id="toast"
+            class="fixed mt-8 top-16 right-5 px-4 py-3 rounded-lg shadow-lg text-white z-50
+         {{ session('success') ? 'bg-green-600' : 'bg-red-600' }}">
+
+            {{ session('success') ?? session('error') }}
+        </div>
+
+        <script>
+            setTimeout(() => {
+                const toast = document.getElementById('toast');
+                if (toast) {
+                    toast.style.opacity = '0';
+                    toast.style.transition = 'opacity 0.5s ease';
+                    setTimeout(() => toast.remove(), 500);
+                }
+            }, 3000);
+        </script>
+    @endif
+    
     <script>
         const btn = document.getElementById('notificationBtn');
         const dropdown = document.getElementById('notificationDropdown');

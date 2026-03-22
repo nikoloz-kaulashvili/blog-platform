@@ -17,6 +17,6 @@ class CommentController extends Controller
             'content' => $request->content,
         ]);
 
-        return back();
+        return back()->with('success', 'კომენტარი წარმატებით დაემატა');
     }
 }

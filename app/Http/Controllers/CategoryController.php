@@ -32,7 +32,7 @@ class CategoryController extends Controller
 
         $this->categoryService->create($request->only('name'));
 
-        return redirect()->route('categories.index');
+        return redirect()->route('categories.index')->with('success', 'კატეგორია წარმატებით შეიქმნა');
     }
 
     public function edit(Category $category)
@@ -48,7 +48,7 @@ class CategoryController extends Controller
 
         $this->categoryService->update($category, $request->only('name'));
 
-        return redirect()->route('categories.index');
+        return redirect()->route('categories.index')->with('success', 'კატეგორია წარმატებით განახლდა');
     }
 
     public function destroy(Category $category)
