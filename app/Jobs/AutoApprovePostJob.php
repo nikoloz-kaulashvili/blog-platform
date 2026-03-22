@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Events\PostStatusUpdated;
 use App\Models\Post;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -36,6 +37,8 @@ class AutoApprovePostJob implements ShouldQueue
                     'post_id' => $post->id
                 ])
             );
+
+            event(new PostStatusUpdated($post, $post->user_id));
         }
     }
 }

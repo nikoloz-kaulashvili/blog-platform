@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\PostStatusChangedMail;
+use App\Events\PostStatusUpdated;
 
 class PostService
 {
@@ -75,7 +76,7 @@ class PostService
 
         Mail::to($post->user->email)
             ->send(new PostStatusChangedMail($post));
-
+        event(new PostStatusUpdated($post, $post->user_id));
         return $post;
     }
 
@@ -95,7 +96,7 @@ class PostService
 
         Mail::to($post->user->email)
             ->send(new PostStatusChangedMail($post));
-
+        event(new PostStatusUpdated($post, $post->user_id));
         return $post;
     }
 

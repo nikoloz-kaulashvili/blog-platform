@@ -44,7 +44,7 @@
                         </svg>
 
                         @if ($unreadCount > 0)
-                            <span
+                            <span id="notificationCount"
                                 class="absolute -top-1 -right-1 bg-red-600 text-white text-[10px] min-w-[18px] h-[18px] flex items-center justify-center rounded-full px-1">
                                 {{ $unreadCount }}
                             </span>
@@ -144,24 +144,31 @@
 
             const toast = document.createElement('div');
 
-            const colors = {
+            const styles = {
                 success: 'bg-green-600',
                 error: 'bg-red-600',
                 info: 'bg-blue-600'
             };
 
+            const icons = {
+                success: '✔',
+                error: '✖',
+                info: 'ℹ'
+            };
+
             toast.className = `
-            ${colors[type] || 'bg-gray-800'}
-            text-white px-5 py-3 rounded-xl shadow-lg
-            flex items-center justify-between gap-4
-            min-w-[250px] max-w-[320px]
-            animate-slide-in
-        `;
+        ${styles[type] || 'bg-gray-800'}
+        text-white px-5 py-4 rounded-2xl shadow-xl
+        flex items-center gap-3
+        min-w-[260px] max-w-[320px]
+        animate-slide-in
+    `;
 
             toast.innerHTML = `
-            <span>${message}</span>
-            <button class="text-white/70 hover:text-white">&times;</button>
-        `;
+        <span class="text-lg">${icons[type]}</span>
+        <div class="flex-1 text-sm">${message}</div>
+        <button class="text-white/70 hover:text-white text-lg">&times;</button>
+    `;
 
             toast.querySelector('button').onclick = () => toast.remove();
 
@@ -178,6 +185,76 @@
             showToast("{{ session('toast.message') }}", "{{ session('toast.type') }}");
         </script>
     @endif
+
+    <script src="https://js.pusher.com/8.4.0/pusher.min.js"></script>
+
+    <script>
+        const pusher = new Pusher("{{ env('PUSHER_APP_KEY') }}", {
+            cluster: "{{ env('PUSHER_APP_CLUSTER') }}",
+            authEndpoint: '/broadcasting/auth',
+            auth: {
+                headers: {
+                    'X-CSRF-TOKEN': "{{ csrf_token() }}"
+                }
+            }
+        });
+
+        const channel = pusher.subscribe('private-user.{{ auth()->id() }}');
+
+        channel.bind('post.status.updated', function(data) {
+            console.log(data);
+
+            const status = data.post.status;
+
+            let message = '';
+            let type = 'info';
+
+            if (status === 'approved') {
+                message = '✅ Your post was approved';
+                type = 'success';
+            } else if (status === 'rejected') {
+                message = '❌ Your post was rejected';
+                type = 'error';
+            }
+
+            showToast(message, type);
+
+            // 🔔 COUNTER
+            const counter = document.getElementById('notificationCount');
+            if (counter) {
+                let current = parseInt(counter.innerText) || 0;
+                counter.innerText = current + 1;
+                counter.classList.remove('hidden');
+            }
+
+            // 🔥 DROPDOWN UPDATE
+            const container = document.querySelector('#notificationDropdown .max-h-96');
+
+            if (container) {
+                const item = document.createElement('div');
+
+                item.className = `
+            px-4 py-3 bg-blue-50 flex gap-3 border-b
+            `;
+
+                item.innerHTML = `
+                <div class="mt-1">
+                    <div class="w-2 h-2 rounded-full bg-blue-500"></div>
+                </div>
+                <div class="flex-1">
+                    <div class="text-sm text-gray-800">
+                        ${data.post.title} - ${data.post.status}
+                    </div>
+                    <div class="text-xs text-gray-400 mt-1">
+                        just now
+                    </div>
+                </div>
+            `;
+
+                container.prepend(item);
+            }
+        });
+    </script>
 
 </body>
 
