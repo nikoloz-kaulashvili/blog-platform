@@ -65,7 +65,6 @@
                         {{ $comment->content }}
                     </p>
 
-                    {{-- reply form --}}
                     @auth
                         <form method="POST" action="{{ route('comments.store', $post) }}"
                             class="mt-3 flex gap-2 items-center">
@@ -82,7 +81,6 @@
                         </form>
                     @endauth
 
-                    {{-- replies --}}
                     @foreach ($comment->replies as $reply)
                         <div class="ml-6 mt-3 border-l pl-4">
 

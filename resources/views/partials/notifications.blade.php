@@ -2,7 +2,6 @@
 
             @auth
 
-                {{-- 🔔 NOTIFICATIONS --}}
                 <div class="relative">
 
                     <button id="notificationBtn" class="relative p-2 rounded-lg hover:bg-gray-100 transition">

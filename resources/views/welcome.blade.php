@@ -30,36 +30,40 @@
             </div>
         </form>
 
-        {{-- POSTS --}}
         <div class="mt-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
 
             @forelse($posts as $post)
-                <div class="bg-white p-4 rounded-xl shadow hover:shadow-lg transition">
+                <div class="bg-white rounded-xl shadow hover:shadow-lg transition overflow-hidden">
 
-                    <h2 class="text-lg font-bold text-gray-800">
-                        {{ $post->title }}
-                    </h2>
+                    @if ($post->image)
+                        <img src="{{ asset('storage/' . $post->image) }}" class="w-full h-40 object-cover">
+                    @endif
 
-                    <p class="text-xs text-gray-400">
-                        {{ $post->created_at->format('d.m.Y H:i') }}
-                    </p>
+                    <div class="p-4">
+                        <h2 class="text-lg font-bold text-gray-800">
+                            {{ $post->title }}
+                        </h2>
 
-                    <p class="text-sm text-gray-500 mt-1">
-                        ავტორი: {{ $post->user->name }}
-                    </p>
+                        <p class="text-xs text-gray-400">
+                            {{ $post->created_at->format('d.m.Y H:i') }}
+                        </p>
 
-                    <div class="flex justify-between items-center mt-4">
+                        <p class="text-sm text-gray-500 mt-1">
+                            ავტორი: {{ $post->user->name }}
+                        </p>
 
-                        <span class="text-xs text-gray-500">
-                            {{ $post->comments_count }} კომენტარი
-                        </span>
+                        <div class="flex justify-between items-center mt-4">
 
-                        <a href="{{ route('posts.show', $post) }}" class="text-blue-600 text-sm hover:underline">
-                            მეტის ნახვა →
-                        </a>
+                            <span class="text-xs text-gray-500">
+                                {{ $post->comments_count }} კომენტარი
+                            </span>
 
+                            <a href="{{ route('posts.show', $post) }}" class="text-blue-600 text-sm hover:underline">
+                                მეტის ნახვა →
+                            </a>
+
+                        </div>
                     </div>
-
                 </div>
             @empty
                 <p class="text-gray-500">ამჟამად პოსტი არარის</p>

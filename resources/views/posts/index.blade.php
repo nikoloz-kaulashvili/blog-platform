@@ -41,6 +41,9 @@
 
         @foreach ($posts as $post)
             <div class="bg-white p-5 mb-4 rounded-2xl shadow hover:shadow-md transition">
+                @if ($post->image)
+                    <img src="{{ asset('storage/' . $post->image) }}" class="w-32 h-24 object-cover rounded-lg">
+                @endif
                 <div class="flex justify-between items-start">
                     <div>
                         <h3 class="text-lg font-semibold text-gray-800">

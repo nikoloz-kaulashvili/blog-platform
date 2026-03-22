@@ -42,7 +42,7 @@
                     class="hidden absolute right-0 mt-3 w-96 bg-white rounded-2xl shadow-xl border border-gray-100 z-50 overflow-hidden">
 
                     <div class="flex justify-between items-center p-4 border-b bg-gray-50">
-                        <span class="font-semibold text-gray-800">ნოთიფიქეიშენები</span>
+                        <span class="font-semibold text-gray-800">შეტყობინებები</span>
                     </div>
 
                     <div class="max-h-96 overflow-y-auto">
@@ -70,7 +70,7 @@
                             </div>
                         @empty
                             <div class="p-6 text-center text-gray-400 text-sm">
-                                არარის ნოთიფიქეიშენი
+                                არარის შეტყობინება
                             </div>
                         @endforelse
 
